@@ -51,10 +51,10 @@ section](#deploy) for additional details.
 ## Architecture
 The `kube-insight` observability stack is "Kubernetes-native" in that it both
 monitors a Kubernetes cluster and runs in a Kubernetes cluster. The monitored
-cluster can, and probably, should be a different cluster from the one where
+cluster can, and probably should, be a different cluster from the one where
 `kube-insight` is deployed (at least for production settings: the times when
 your cluster is experiencing problems are the times when you *don't* want your
-observabilit solution to fail -- so keep those error domains separate!).
+monitoring to break -- so keep those error domains separate!).
 
 
 TODO: architecture sketch
