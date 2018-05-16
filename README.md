@@ -5,16 +5,20 @@ several best-of-breed cluster monitoring products with the intent of creating
 a comprehensive observability solution to help administrators track overall
 cluster and micro-service health, and to better understand system dynamics.
 
+This repository contains the Kubernetes manifests necessary to deploy the
+`kube-insight` stack. As such, it merely references included docker images. The
+actual code of the software components of the stack are kept in separate repos.
+
 `kube-insight` is intended to provide the following key functionalities:
 
-- *topology-awareness*: determines a service dependency graph by detecting the
-  communication flow between containers.
-- *metrics collection*: collects container metrics for all deployed services.
-- *log collection*: collects container logs for troubleshooting
-- *event collection*: collects Kubernetes events to form a system change history
+- *topology-awareness*: automatically discover the service dependency graph by
+  detecting the communication flow between containers.
+- *metrics collection*: collect container metrics for all deployed services.
+- *log collection*: collect container logs for troubleshooting
+- *event collection*: collect Kubernetes events to form a system change history
   to, for example, be able to determine what changes introduced a performance
   degradation.
-- *visualization*: provides a single UI for visualizing the system state in a
+- *visualization*: provide a single UI for visualizing the system state in a
   topology-centric manner, allowing drill-down to watch details (metrics, logs,
   events) pertaining to a certain deployment/pod/container.
 - time-travel: by continusously saving state (topology, metrics, logs, events)
@@ -24,9 +28,11 @@ cluster and micro-service health, and to better understand system dynamics.
 We believe that `kube-insight` can ease the life of Kubernetes cluster operators
 by providing contextualized insight into the system. Todays microservice-based
 architectures involve a lot of moving parts with complex inter-dependencies. The
-service topology should simplify the task of root-cause-analysis, by quickly
-allowing the operator to zoom in on the relevant services and then being able to
-drill down to troubleshoot individual pods (metrics, logs).
+combination of topology-awareness and tracking per-container data such as logs
+and metrics should simplify the task of root-cause-analysis, by quickly allowing
+the operator to zoom in on the relevant services and then being able to drill
+down to troubleshoot individual pods (for example by looking at their metrics,
+logs).
 
 The project is based on modern, cloud-native components, and adds some glue-code
 where necessary to integrate third-party software. For more details, refer to
@@ -37,7 +43,7 @@ the [architecture](#architecture) section below.
 This project is very much a work in progress. Additional manifests will be added
 as components are added to the stack.
 
-For the time being there isn't a single isntaller script but the
+For the time being there isn't a single installer script but the
 [manifests](manifests) need to be deployed one-by-one. See the [deploy
 section](#deploy) for additional details.
 
@@ -69,7 +75,7 @@ Note that agents and servers _can_ be deployed onto the same cluster, but are
 recommended to run on separate clusters (at least in production).
 
 A single installer script is not available at this time. For more details and
-for installation instructions, go to each [manifests](manifests) subfolder. 
+for installation instructions, go to each [manifests](manifests) subfolder.
 
 A generic Jinja2 manifest renderer is available under [manifestr](manifestr)
 ("manifest renderer") and can be used when some degree of parameterization is
