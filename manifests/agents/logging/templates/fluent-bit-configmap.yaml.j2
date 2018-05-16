@@ -1,0 +1,70 @@
+#
+# Manifest inspired by:
+#  https://github.com/fluent/fluent-bit-kubernetes-logging
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-config
+  namespace: {{ vars["namespace"] }}
+  labels:
+    k8s-app: fluent-bit
+data:
+  # Configuration files: server, input, filters and output
+  # ======================================================
+  fluent-bit.conf: |
+    [SERVICE]
+        Flush         1
+        Log_Level     info
+        Daemon        off
+        Parsers_File  parsers.conf
+        HTTP_Server   On
+        HTTP_Listen   0.0.0.0
+        HTTP_Port     2020
+    @INCLUDE input-kubernetes.conf
+    @INCLUDE filter-kubernetes.conf
+    @INCLUDE output-http.conf
+  input-kubernetes.conf: |
+    [INPUT]
+        Name              tail
+        Tag               kube.*
+        Path              /var/log/containers/*.log
+        # NOTE: ignore output from fluent-bit containers
+        Exclude_Path      /var/log/containers/*fluent-bit*.log
+        Parser            docker
+        DB                /var/log/flb_kube.db
+        Mem_Buf_Limit     5MB
+        Skip_Long_Lines   On
+        Refresh_Interval  10
+  filter-kubernetes.conf: |
+    [FILTER]
+        Name                kubernetes
+        Match               kube.*
+        Kube_URL            https://kubernetes.default.svc.cluster.local:443
+        Merge_Log           On
+        K8S-Logging.Parser  On
+  output-http.conf: |
+    [OUTPUT]
+        Name            http
+        Match           *
+        Host            ${HTTP_HOST}
+        Port            ${HTTP_PORT}
+        URI             ${HTTP_URI}
+        # TODO: use msgpack as output format for performance
+        Format          json
+        #tls             On
+        #tls.verify      On
+        #tls.debug       1
+        #tls.ca_file
+        #tls.crt_file
+        #tls.key_file
+  parsers.conf: |
+    [PARSER]
+        Name        docker
+        Format      json
+        Time_Key    time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L
+        Time_Keep   On
+        # Command      |  Decoder | Field | Optional Action
+        # =============|==================|=================
+        Decode_Field_As   escaped    log
