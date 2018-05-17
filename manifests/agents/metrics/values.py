@@ -8,5 +8,14 @@ values = {
         "memRequestMB": 40,
         "cpuLimitMilliCores": 80,
         "memLimitMB": 200
+    },
+    "kubeStateMetrics": {
+        "image": "quay.io/coreos/kube-state-metrics",
+        "version": "1.3.1",
+        "pullPolicy": "IfNotPresent",
+        "cpuRequestMilliCores": 40,
+        "memRequestMB": 40,
+        "cpuLimitMilliCores": 100,
+        "memLimitMB": 200
     }
 }
