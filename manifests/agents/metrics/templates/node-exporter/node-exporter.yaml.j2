@@ -1,0 +1,90 @@
+#
+# See https://github.com/kubernetes/charts/blob/master/stable/prometheus-node-exporter
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporter
+  namespace: {{ vars["namespace"] }}
+  labels:
+    app: node-exporter
+    k8s-app: node-exporter
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: metrics
+    port: 9100
+    protocol: TCP
+  selector:
+    app: node-exporter
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+  namespace: {{ vars["namespace"] }}
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      name: node-exporter
+      labels:
+        app: node-exporter
+    spec:
+      serviceAccountName: node-exporter
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: node-exporter
+        image: {{ vars["nodeExporter"]["image"] }}:v{{ vars["nodeExporter"]["version"] }}
+        imagePullPolicy: {{ vars["nodeExporter"]["pullPolicy"] }}
+        args:
+        - "--web.listen-address=:9100"
+        - "--path.procfs=/host/proc"
+        - "--path.sysfs=/host/sys"
+        ports:
+        - name: metrics
+          containerPort: 9100
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9100
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9100
+        resources:
+          limits:
+            cpu: {{ vars["nodeExporter"]["cpuLimitMilliCores"] }}m
+            memory: {{ vars["nodeExporter"]["memLimitMB"] }}Mi
+          requests:
+            cpu: {{ vars["nodeExporter"]["cpuRequestMilliCores"] }}m
+            memory: {{ vars["nodeExporter"]["memRequestMB"] }}M
+        volumeMounts:
+        - name: proc
+          readOnly:  true
+          mountPath: /host/proc
+        - name: sys
+          readOnly: true
+          mountPath: /host/sys
+      tolerations:
+        # allow scheduling onto any node
+        - effect: NoSchedule
+          operator: Exists
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys

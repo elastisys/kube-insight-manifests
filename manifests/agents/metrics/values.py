@@ -17,5 +17,14 @@ values = {
         "memRequestMB": 40,
         "cpuLimitMilliCores": 100,
         "memLimitMB": 200
+    },
+    "nodeExporter": {
+        "image": "quay.io/prometheus/node-exporter",
+        "version": "0.15.2",
+        "pullPolicy": "IfNotPresent",
+        "cpuRequestMilliCores": 100,
+        "memRequestMB": 30,
+        "cpuLimitMilliCores": 200,
+        "memLimitMB": 50
     }
 }
