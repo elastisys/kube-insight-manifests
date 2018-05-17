@@ -1,0 +1,75 @@
+
+---
+apiVersion: apiregistration.k8s.io/v1beta1
+kind: APIService
+metadata:
+  name: v1beta1.metrics.k8s.io
+  namespace: kube-system
+spec:
+  service:
+    name: metrics-server
+    namespace: kube-system
+  group: metrics.k8s.io
+  version: v1beta1
+  insecureSkipTLSVerify: true
+  groupPriorityMinimum: 100
+  versionPriority: 100
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: metrics-server
+  namespace: kube-system
+  labels:
+    kubernetes.io/name: "metrics-server"
+    kubernetes.io/cluster-service: "true"
+spec:
+  selector:
+    k8s-app: metrics-server
+  ports:
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 443
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: metrics-server
+  namespace: kube-system
+  labels:
+    k8s-app: metrics-server
+    kubernetes.io/cluster-service: "true"
+spec:
+  selector:
+    matchLabels:
+      k8s-app: metrics-server
+  template:
+    metadata:
+      name: metrics-server
+      labels:
+        k8s-app: metrics-server
+    spec:
+      serviceAccountName: metrics-server
+      containers:
+      - name: metrics-server
+        image: {{ vars["metricsServer"]["image"] }}:v{{ vars["metricsServer"]["version"] }}
+        imagePullPolicy: {{ vars["metricsServer"]["pullPolicy"] }}
+        command:
+        - /metrics-server
+        - --source=kubernetes.summary_api:''
+        resources:
+          limits:
+            cpu: {{ vars["metricsServer"]["cpuLimitMilliCores"] }}m
+            memory: {{ vars["metricsServer"]["memLimitMB"] }}Mi
+          requests:
+            cpu: {{ vars["metricsServer"]["cpuRequestMilliCores"] }}m
+            memory: {{ vars["metricsServer"]["memRequestMB"] }}M
+      tolerations:
+      # allow scheduling onto master
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
