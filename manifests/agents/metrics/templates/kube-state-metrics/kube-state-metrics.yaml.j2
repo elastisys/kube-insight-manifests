@@ -36,7 +36,7 @@ spec:
       serviceAccountName: kube-state-metrics
       containers:
       - name: kube-state-metrics
-        image: {{ vars["kubeStateMetrics"]["image"] }}:v{{ vars["kubeStateMetrics"]["version"] }}
+        image: {{ vars["kubeStateMetrics"]["image"] }}:{{ vars["kubeStateMetrics"]["version"] }}
         imagePullPolicy: {{ vars["kubeStateMetrics"]["pullPolicy"] }}
         ports:
         - name: http-metrics
