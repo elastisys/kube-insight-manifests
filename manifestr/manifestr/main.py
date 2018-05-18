@@ -14,6 +14,10 @@ logging.basicConfig(level=logging._nameToLevel[LOG_LEVEL],
                     format="%(asctime)s [%(levelname)5.5s] %(message)s")
 LOG = logging.getLogger(__name__)
 
+DEFAULT_VALUES_DICT = os.path.join(".", "values.py")
+DEFAULT_TEMPLATES_ROOT_DIR = os.path.join(".", "templates")
+DEFAULT_OUTPUT_DIR = os.path.join(".", "output")
+
 def template_files(root_dir):
     template_paths = []
     for dirpath, dirnames, filenames in os.walk(root_dir):
@@ -48,17 +52,19 @@ def cli():
         prog="manifestr",
         description="A Jinja2 template renderer.")
     parser.add_argument(
-        "--values-dict", dest="value_dict_path", required=True,
-        help="A .py file containing a single `values` dict with values to be "
-        "used for substitutions in template placeholders.")
+        "--values-dict", dest="value_dict_path", default=DEFAULT_VALUES_DICT,
+        help="A .py file containing a single `values` dict with values to "
+        "be used for substitutions in template placeholders. "
+        "Default: {}".format(DEFAULT_VALUES_DICT))
     parser.add_argument(
-        "--template-root-dir", dest="root_dir", required=True,
+        "--template-root-dir", dest="root_dir",
+        default=DEFAULT_TEMPLATES_ROOT_DIR,
         help="Directory that will be (recursively) scanned for .j2 files to"
-        "be rendered.")
+        "be rendered. Default: {}".format(DEFAULT_TEMPLATES_ROOT_DIR))
     parser.add_argument(
-        "--output-dir", dest="out_dir", default="output",
+        "--output-dir", dest="out_dir", default=DEFAULT_OUTPUT_DIR,
         help="Directory to which rendered templates are written (with their"
-        " .j2 file-ending stripped).")
+        " .j2 file-ending stripped). Default: {}".format(DEFAULT_OUTPUT_DIR))
     parser.add_argument(
         "--overwrite", action="store_true", default=False,
         help="If output directory already exists remove its content prior to"
