@@ -36,6 +36,6 @@ values = {
         "cpuLimitMilliCores": 200,
         "memLimitMB": 800,
         "scrapeInterval": "20s",
-        "retention": "24h"
+        "retention": "12h"
     }
 }
