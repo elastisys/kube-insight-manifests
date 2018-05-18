@@ -2,7 +2,7 @@ values = {
     "namespace": "monitoring",
     "metricsServer": {
         "image": "gcr.io/google_containers/metrics-server-amd64",
-        "version": "0.2.1",
+        "version": "v0.2.1",
         "pullPolicy": "IfNotPresent",
         "cpuRequestMilliCores": 40,
         "memRequestMB": 40,
@@ -11,7 +11,7 @@ values = {
     },
     "kubeStateMetrics": {
         "image": "quay.io/coreos/kube-state-metrics",
-        "version": "1.3.1",
+        "version": "v1.3.1",
         "pullPolicy": "IfNotPresent",
         "cpuRequestMilliCores": 40,
         "memRequestMB": 40,
@@ -20,11 +20,22 @@ values = {
     },
     "nodeExporter": {
         "image": "quay.io/prometheus/node-exporter",
-        "version": "0.15.2",
+        "version": "v0.15.2",
         "pullPolicy": "IfNotPresent",
         "cpuRequestMilliCores": 100,
         "memRequestMB": 30,
         "cpuLimitMilliCores": 200,
         "memLimitMB": 50
+    },
+    "prometheus": {
+        "image": "prom/prometheus",
+        "version": "v2.1.0",
+        "pullPolicy": "IfNotPresent",
+        "cpuRequestMilliCores": 100,
+        "memRequestMB": 600,
+        "cpuLimitMilliCores": 200,
+        "memLimitMB": 800,
+        "scrapeInterval": "20s",
+        "retention": "24h"
     }
 }
