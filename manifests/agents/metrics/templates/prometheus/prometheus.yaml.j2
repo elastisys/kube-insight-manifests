@@ -39,17 +39,6 @@ spec:
       serviceAccountName: prometheus
       # TODO: init container to chown -R 65534:65534 volume mount path?
       containers:
-        # forces prometheus to reload on changes to its configmap
-        - name: prometheus-server-configmap-reload
-          image: jimmidyson/configmap-reload:v0.1
-          imagePullPolicy: IfNotPresent
-          args:
-            - --volume-dir=/etc/config
-            - --webhook-url=http://localhost:9090/-/reload
-          volumeMounts:
-            - name: config-volume
-              mountPath: /etc/config
-              readOnly: true
         - name: prometheus-server
           image: {{ vars['prometheus']['image'] }}:{{ vars['prometheus']['version'] }}
           imagePullPolicy: "{{ vars['prometheus']['pullPolicy'] }}"
@@ -89,9 +78,17 @@ spec:
               mountPath: /etc/config
             - name: storage-volume
               mountPath: /data
-      # TODO: securityContext?
-      #securityContext:
-      #  runAsUser: 65534
+        # sidecar container that forces prometheus to reload on changes to its configmap
+        - name: prometheus-server-configmap-reload
+          image: jimmidyson/configmap-reload:v0.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - --volume-dir=/etc/config
+            - --webhook-url=http://localhost:9090/-/reload
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true              
       tolerations:
         # allow scheduling onto master
         - key: node-role.kubernetes.io/master
