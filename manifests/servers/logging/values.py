@@ -4,9 +4,9 @@ values = {
     "image": "elastisys/kube-insight-logserver",
     "version": "1.0.0",
     "pullPolicy": "Always",
-    "cpuRequestMilliCores": 5,
+    "cpuRequestMilliCores": 500,
     "memRequestMB": 20,
-    "cpuLimitMilliCores": 50,
+    "cpuLimitMilliCores": 500,
     "memLimitMB": 60,
 
     "cassandraHosts": ["cassandra"],
