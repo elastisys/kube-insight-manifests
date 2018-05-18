@@ -65,6 +65,19 @@ data:
           replacement: '${1}'
           target_label: name
 
+      # scrape configuration for kube-state-metrics.
+      - job_name: kube-state-metrics
+        kubernetes_sd_configs:
+        - role: endpoints
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        # filter out endpoints such that we only keep the http endpoint for the kube-state-metrics endpoint(s).
+        relabel_configs:
+          - action: keep
+            source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]            
+            regex: {{ vars["namespace"] }};kube-state-metrics;http
+          
       # A scrape configuration for running Prometheus on a Kubernetes cluster.
       # This uses separate scrape configs for cluster components (i.e. API server, node)
       # and services to allow each to use different authentication configs.
