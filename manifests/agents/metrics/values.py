@@ -1,5 +1,5 @@
 values = {
-    "namespace": "monitoring",
+    "namespace": "metrics",
     "metricsServer": {
         "image": "gcr.io/google_containers/metrics-server-amd64",
         "version": "v0.2.1",
@@ -36,6 +36,7 @@ values = {
         "cpuLimitMilliCores": 200,
         "memLimitMB": 800,
         "scrapeInterval": "20s",
-        "retention": "12h"
+        "retention": "12h",
+        "remoteWriteURL": "http://kube-insight-prometheus-kairosdb-adapter.metrics.svc.cluster.local:9201/write"
     }
 }

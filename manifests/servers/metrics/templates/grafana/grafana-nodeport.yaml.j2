@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: kube-insight-grafana-nodeport
+  namespace: {{ vars['namespace'] }}
+spec:
+  type: NodePort
+  selector:
+    k8s-app: kube-insight-grafana
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 30300

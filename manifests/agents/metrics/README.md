@@ -47,7 +47,7 @@ Besides these sources, the Prometheus server is configured to also scrape these
 targets:
 
 - [kubelet metrics](https://godoc.org/k8s.io/kubernetes/pkg/kubelet/metrics):
-  publishes stats about the operation of each nodes' kubelet.
+  publishes stats about the operation of each node's kubelet.
 - [cadvisor](https://github.com/google/cadvisor) metrics: publishes per-container
   metrics such as CPU/memory usage, disk I/O, and network I/O.
 - apiserver metrics: publishes stats about the operation of each apiserver.
@@ -87,7 +87,7 @@ First, [set up manifestr](../../../manifestr/README.md) and then run:
 	# create namespace (if it doesn't already exist)
 	kubectl create ns <name>
     # apply manifests
-    kubectl apply -f output/
+    kubectl apply -R -f output/
 
 
 ## Verify
@@ -98,4 +98,4 @@ web GUI via:
 	
 or by running `kubectl proxy -p 8001` followed by:
 
-    http://localhost:8001/api/v1/namespaces/monitoring/services/prometheus:9090/proxy/targets
+    http://localhost:8001/api/v1/namespaces/metrics/services/prometheus:9090/proxy/targets

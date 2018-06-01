@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-insight-prometheus-kairosdb-adapter
+  namespace: {{ vars['namespace'] }}
+  labels:
+    kubernetes.io/cluster-service: "true"
+    task: "kube-insight-prometheus-kairosdb-adapter"
+    kubernetes.io/name: "kube-insight-prometheus-kairosdb-adapter"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 9201
+    targetPort: 9201
+  selector:
+    k8s-app: kube-insight-prometheus-kairosdb-adapter
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-insight-prometheus-kairosdb-adapter
+  namespace: {{ vars['namespace'] }}
+  labels:
+    k8s-app: "kube-insight-prometheus-kairosdb-adapter"
+    kubernetes.io/cluster-service: "true"
+    version: "{{ vars['prometheusKairosDBAdapter']['version'] }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kube-insight-prometheus-kairosdb-adapter
+      version: {{ vars['prometheusKairosDBAdapter']['version'] }}
+  template:
+    metadata:
+      labels:
+        task: "kube-insight-prometheus-kairosdb-adapter"
+        k8s-app: "kube-insight-prometheus-kairosdb-adapter"
+        version: "{{ vars['prometheusKairosDBAdapter']['version'] }}"
+    spec:
+      containers:
+      - name: kube-insight-prometheus-kairosdb-adapter
+        image: {{ vars['prometheusKairosDBAdapter']['image'] }}:{{ vars['prometheusKairosDBAdapter']['version'] }}
+        imagePullPolicy: {{ vars['prometheusKairosDBAdapter']['pullPolicy'] }}
+        args:
+          - --config=/etc/prometheus-kairosdb-adapter/config.yml 
+        ports:
+        - name: http
+          containerPort: 9201
+        volumeMounts:
+        - name: config
+          mountPath: /etc/prometheus-kairosdb-adapter
+          readOnly: true          
+        resources:
+          limits:
+            cpu: {{ vars['prometheusKairosDBAdapter']['cpuLimitMilliCores'] }}m
+            memory: {{ vars['prometheusKairosDBAdapter']['memLimitMB'] }}Mi
+          requests:
+            cpu: {{ vars['prometheusKairosDBAdapter']['cpuRequestMilliCores'] }}m
+            memory: {{ vars['prometheusKairosDBAdapter']['memRequestMB'] }}Mi
+      volumes:
+      - name: config
+        configMap:
+          name: prometheus-kairosdb-adapter-config
+      tolerations:
+      # allow scheduling onto master
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule

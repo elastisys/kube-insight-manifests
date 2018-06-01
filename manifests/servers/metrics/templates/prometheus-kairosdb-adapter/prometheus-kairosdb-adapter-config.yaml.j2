@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-kairosdb-adapter-config
+  namespace: {{ vars['namespace'] }}
+data:
+  config.yml: |
+    kairosdb-url: "http://kube-insight-kairosdb.{{ vars['namespace'] }}.svc.cluster.local:8080"
+    timeout: "10s"
+    #metricname-prefix: ""
+    dryrun: false
+    server:
+      port: ':9201'
+
+      # filter out all metrics coming from prometheus-* jobs (i.e., metrics
+      # about the prometheus servers themselves)
+      metric_relabel_configs:
+        - source_labels: [ 'job' ]
+          regex: '^prometheus\-.*'
+          action: 'drop'
+    
+

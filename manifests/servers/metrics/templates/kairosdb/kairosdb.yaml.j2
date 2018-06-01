@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-insight-kairosdb
+  namespace: {{ vars['namespace'] }}
+  labels:
+    kubernetes.io/cluster-service: "true"
+    task: "kube-insight-kairosdb"
+    kubernetes.io/name: "kube-insight-kairosdb"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    k8s-app: kube-insight-kairosdb
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-insight-kairosdb
+  namespace: {{ vars['namespace'] }}
+  labels:
+    k8s-app: "kube-insight-kairosdb"
+    kubernetes.io/cluster-service: "true"
+    version: "{{ vars['kairosdb']['version'] }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kube-insight-kairosdb
+      version: "{{ vars['kairosdb']['version'] }}"
+  template:
+    metadata:
+      labels:
+        task: "kube-insight-kairosdb"
+        k8s-app: "kube-insight-kairosdb"
+        version: "{{ vars['kairosdb']['version'] }}"
+    spec:
+      containers:
+      - name: kube-insight-kairosdb
+        image: {{ vars['kairosdb']['image'] }}:{{ vars['kairosdb']['version'] }}
+        imagePullPolicy: {{ vars['kairosdb']['pullPolicy'] }}
+        env:
+        - name: CASSANDRA_HOSTS
+          value: kube-insight-cassandra.{{ vars['namespace'] }}.svc.cluster.local
+        - name: CASSANDRA_PORT
+          value: "9042"
+        - name: CASSANDRA_READ_CONSISTENCY_LEVEL
+          value: "{{ vars['kairosdb']['cassandraReadConsistencyLevel'] }}"
+        - name: CASSANDRA_WRITE_CONSISTENCY_LEVEL
+          value: "{{ vars['kairosdb']['cassandraWriteConsistencyLevel'] }}"
+        ports:
+        - name: http
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health/status
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health/status
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: {{ vars['kairosdb']['cpuLimitMilliCores'] }}m
+            memory: {{ vars['kairosdb']['memLimitMB'] }}Mi
+          requests:
+            cpu: {{ vars['kairosdb']['cpuRequestMilliCores'] }}m
+            memory: {{ vars['kairosdb']['memRequestMB'] }}Mi
+      tolerations:
+      # allow scheduling onto master
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule

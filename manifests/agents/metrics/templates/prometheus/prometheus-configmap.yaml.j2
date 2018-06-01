@@ -24,6 +24,14 @@ data:
     rule_files:
       - "/etc/prometheus-rules/*.rules"
 
+    {% if vars['prometheus']['remoteWriteURL'] %}
+    # set up a remote write endpoint to which all scraped targets will be
+    # written for long-term storage.
+    # see: https://prometheus.io/docs/prometheus/latest/storage
+    remote_write:
+      - url: {{ vars['prometheus']['remoteWriteURL'] }}
+    {% endif %}
+
     scrape_configs:
       # scrape configuration for prometheus itself.
       - job_name: prometheus
