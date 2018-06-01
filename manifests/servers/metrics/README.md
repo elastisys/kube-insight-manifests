@@ -16,7 +16,7 @@ kube-insight components for handling metrics. These components include:
 - [Grafana](https://grafana.com/): visualization of metrics.
 
 The agent-side metric components are set up with separate manifests under
-[../..agents/metrics](../..agents/metrics).
+[../../agents/metrics](../../agents/metrics).
 
 
 ## Status
