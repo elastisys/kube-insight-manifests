@@ -27,9 +27,9 @@ First, [set up manifestr](../../../manifestr/README.md) and then run:
     # edit values.py
     ${EDITOR} values.py
     # render k8s manifests
-    manifestr --values-dict values.py --template-root-dir templates/
+    manifestr --values `pwd`/values.py --template-root-dir `pwd`/templates --output-dir `pwd`/output
 
 	# create namespace (if it doesn't already exist)
-	kubectl create ns <name>
+	kubectl create ns logging
     # apply manifests
     kubectl apply -f output/
