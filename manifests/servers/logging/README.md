@@ -5,23 +5,19 @@ This directory contains Kubernetes manifests for deploying
 
 It is intended to be set up as a server that receives Kubernetes pod logs
 collected by a fluentbit daemonset installed on the _monitored cluster_. The
-fluentbit agents can be isntalled via [these manifests](../../agents/logging).
-
+fluentbit agents can be installed via [these manifests](../../agents/logging).
 
 ## Deploying
-The manifests are written as templates with some configurable placeholders,
-whose values are substituded for the values in [values.py](values.py) when
-the [manifestr](../../../manifestr) manifest rendering script is run. The
-rendered manifests can then be applied with `kubectl`.
 
-First, [set up manifestr](../../../manifestr/README.md) and then run:
+The module is installed as a helm chart and to configure the deployment for your
+needs the values in [values.yaml](values.yaml) must be edited.
 
-    # edit values.py
-    ${EDITOR} values.py
-    # render k8s manifests
-    manifestr --values `pwd`/values.py --template-root-dir `pwd`/templates --output-dir `pwd`/output
+First, [set up helm](https://docs.helm.sh/using_helm/#quickstart-guide) and then run:
+
+    # edit values.yaml
+    ${EDITOR} values.yaml
 
     # create namespace (if it doesn't already exist)
     kubectl create ns logging
-    # apply manifests
-    kubectl apply -f output/
+    # install chart
+    helm install `pwd` --name kube-insight-logging-server

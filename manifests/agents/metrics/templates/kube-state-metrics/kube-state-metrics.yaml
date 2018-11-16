@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kube-state-metrics
-  namespace: {{ vars["namespace"] }}
+  namespace: {{ .Values.namespace }}
   labels:
     k8s-app: kube-state-metrics
     kubernetes.io/cluster-service: "true"
@@ -19,7 +19,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-state-metrics
-  namespace: {{ vars["namespace"] }}
+  namespace: {{ .Values.namespace }}
   labels:
     k8s-app: kube-state-metrics
     kubernetes.io/cluster-service: "true"
@@ -36,8 +36,8 @@ spec:
       serviceAccountName: kube-state-metrics
       containers:
       - name: kube-state-metrics
-        image: {{ vars["kubeStateMetrics"]["image"] }}:{{ vars["kubeStateMetrics"]["version"] }}
-        imagePullPolicy: {{ vars["kubeStateMetrics"]["pullPolicy"] }}
+        image: {{ .Values.kubeStateMetrics.image }}:{{ .Values.kubeStateMetrics.version }}
+        imagePullPolicy: {{ .Values.kubeStateMetrics.pullPolicy }}
         ports:
         - name: http-metrics
           containerPort: 8080
@@ -52,11 +52,11 @@ spec:
           - --collectors=cronjobs,daemonsets,deployments,endpoints,horizontalpodautoscalers,jobs,limitranges,namespaces,nodes,persistentvolumeclaims,persistentvolumes,pods,replicasets,replicationcontrollers,resourcequotas,services,statefulsets
         resources:
           limits:
-            cpu: {{ vars["kubeStateMetrics"]["cpuLimitMilliCores"] }}m
-            memory: {{ vars["kubeStateMetrics"]["memLimitMB"] }}Mi
+            cpu: {{ .Values.kubeStateMetrics.cpuLimitMilliCores }}m
+            memory: {{ .Values.kubeStateMetrics.memLimitMB }}Mi
           requests:
-            cpu: {{ vars["kubeStateMetrics"]["cpuRequestMilliCores"] }}m
-            memory: {{ vars["kubeStateMetrics"]["memRequestMB"] }}M
+            cpu: {{ .Values.kubeStateMetrics.cpuRequestMilliCores }}m
+            memory: {{ .Values.kubeStateMetrics.memRequestMB }}M
       tolerations:
       # allow scheduling onto master
       - key: node-role.kubernetes.io/master

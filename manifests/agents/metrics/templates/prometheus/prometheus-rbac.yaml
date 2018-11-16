@@ -5,7 +5,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: prometheus
-  namespace: {{ vars["namespace"] }}
+  namespace: {{ .Values.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -54,7 +54,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: prometheus
-    namespace: {{ vars["namespace"] }}
+    namespace: {{ .Values.namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

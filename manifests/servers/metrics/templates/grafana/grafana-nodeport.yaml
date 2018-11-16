@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: kube-insight-grafana-nodeport
-  namespace: {{ vars['namespace'] }}
+  namespace: {{ .Values.namespace }}
 spec:
   type: NodePort
   selector:

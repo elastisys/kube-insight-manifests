@@ -7,10 +7,10 @@ apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   name: fluent-bit
-  namespace: {{ vars["namespace"] }}
+  namespace: {{ .Values.namespace }}
   labels:
     k8s-app: "fluent-bit-logging"
-    version: "{{ vars["fluentbit"]["version"] }}"
+    version: "{{ .Values.fluentbit.version }}"
     kubernetes.io/cluster-service: "true"
 spec:
   updateStrategy:
@@ -19,7 +19,7 @@ spec:
     metadata:
       labels:
         k8s-app: "fluent-bit-logging"
-        version: "{{ vars["fluentbit"]["version"] }}"
+        version: "{{ .Values.fluentbit.version }}"
         kubernetes.io/cluster-service: "true"
       annotations:
         prometheus.io/scrape: "true"
@@ -28,13 +28,13 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: {{ vars["fluentbit"]["image"] }}:{{ vars["fluentbit"]["version"] }}
+        image: {{ .Values.fluentbit.image }}:{{ .Values.fluentbit.version }}
         imagePullPolicy: Always
         env:
         - name:  HTTP_HOST
-          value: "{{ vars["kubeInsightLogServer"]["host"] }}"
+          value: "{{ .Values.kubeInsightLogServer.host }}"
         - name:  HTTP_PORT
-          value: "{{ vars["kubeInsightLogServer"]["port"] }}"
+          value: "{{ .Values.kubeInsightLogServer.port }}"
         - name:  HTTP_URI
           value: "/write"
         command:
@@ -53,11 +53,11 @@ spec:
             port: 2020
         resources:
           limits:
-            cpu: {{ vars["fluentbit"]["cpuLimitMilliCores"] }}m
-            memory: {{ vars["fluentbit"]["memLimitMB"] }}Mi
+            cpu: {{ .Values.fluentbit.cpuLimitMilliCores }}m
+            memory: {{ .Values.fluentbit.memLimitMB }}Mi
           requests:
-            cpu: {{ vars["fluentbit"]["cpuRequestMilliCores"] }}m
-            memory: {{ vars["fluentbit"]["memRequestMB"] }}Mi
+            cpu: {{ .Values.fluentbit.cpuRequestMilliCores }}m
+            memory: {{ .Values.fluentbit.memRequestMB }}Mi
         volumeMounts:
         - name: varlog
           mountPath: /var/log

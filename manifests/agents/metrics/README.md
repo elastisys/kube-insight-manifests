@@ -1,4 +1,5 @@
-# metric collection agents
+# Metric collection agents
+
 This directory contains Kubernetes manifests for deploying metric collection
 agents in a monitored cluster.
 
@@ -24,7 +25,6 @@ remote, long-term storage. Prometheus itself may not be the best solution in
 this regard (see
 [this](https://prometheus.io/docs/prometheus/latest/storage/#remote-storage-integrations).
 
-
 The metric collection agents deployed via manifests in this repository include:
 
 - [node-exporter](https://github.com/prometheus/node_exporter): a daemon set
@@ -35,13 +35,13 @@ The metric collection agents deployed via manifests in this repository include:
   can be thought of as a [replacement for
   Heapster](https://coreos.com/blog/autoscaling-with-prometheus-and-kubernetes-metrics-apis)
   and is needed to back the `kubectl top` command. You can, for example, play
-  with the API via 
+  with the API via
 
         kubectl get --raw https://kubernetes:443/apis/metrics.k8s.io/v1beta1/
+
 - [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics):
   collects and publishes state metrics for various API objects (pods,
   deployments, etc) from the Kubernetes API.
-
 
 Besides these sources, the Prometheus server is configured to also scrape these
 targets:
@@ -55,9 +55,9 @@ targets:
   `prometheus.io/scrape` will have each of its ports scraped. The following
   annotations can be used to be more specific about how to scrape an endpoint:
 
-    - `prometheus.io/path`: to use a metrics path different than `/metrics`.
-    - `prometheus.io/port`: If the metrics are exposed on a different port to the
-       service then set this appropriately.
+  - `prometheus.io/path`: to use a metrics path different than `/metrics`.
+  - `prometheus.io/port`: If the metrics are exposed on a different port to the
+    service then set this appropriately.
 
 - scrape-enabled pods: `prometheus.io/scrape`: applications running in the
   Kubernetes may choose to have their (application-specific) metrics scraped by
@@ -66,36 +66,28 @@ targets:
   scrape endpoint needs to expose metrics in a [Prometheus-compatible
   format](https://prometheus.io/docs/instrumenting/writing_exporters/)).
 
-
-
-
-
-
 ## Deploy
-The manifests are written as templates with some configurable placeholders,
-whose values are substituded for the values in [values.py](values.py) when
-the [manifestr](../../../manifestr) manifest rendering script is run. The
-rendered manifests can then be applied with `kubectl`.
 
-First, [set up manifestr](../../../manifestr/README.md) and then run:
+The module is installed as a helm chart and to configure the deployment for your
+needs the values in [values.yaml](values.yaml) must be edited.
 
-    # edit values.py
-    ${EDITOR} values.py
-    # render k8s manifests
-    manifestr --values `pwd`/values.py --template-root-dir `pwd`/templates --output-dir `pwd`/output
+First, [set up helm](https://docs.helm.sh/using_helm/#quickstart-guide) and then run:
 
-	# create namespace (if it doesn't already exist)
-	kubectl create ns metrics
-    # apply manifests
-    kubectl apply -R -f output/
+    # edit values.yaml
+    ${EDITOR} values.yaml
 
+    # create namespace (if it doesn't already exist)
+    kubectl create ns metrics
+    # install chart
+    helm install `pwd` --name kube-insight-metrics-agent
 
 ## Verify
+
 A nodeport service (port `30090`) is set up for Prometheus. You can visit its
 web GUI via:
 
     http://<cluster-node>:30090/
-	
+
 or by running `kubectl proxy -p 8001` followed by:
 
     http://localhost:8001/api/v1/namespaces/metrics/services/prometheus:9090/proxy/targets

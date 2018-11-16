@@ -2,10 +2,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-kairosdb-adapter-config
-  namespace: {{ vars['namespace'] }}
+  namespace: {{ .Values.namespace }}
 data:
   config.yml: |
-    kairosdb-url: "http://kube-insight-kairosdb.{{ vars['namespace'] }}.svc.cluster.local:8080"
+    kairosdb-url: "http://kube-insight-kairosdb.{{ .Values.namespace }}.svc.cluster.local:8080"
     timeout: "10s"
     #metricname-prefix: ""
     dryrun: false

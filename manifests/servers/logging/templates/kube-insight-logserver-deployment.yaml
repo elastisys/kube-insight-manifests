@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kube-insight-logserver
-  namespace: {{ vars['namespace'] }}
+  namespace: {{ .Values.namespace }}
   labels:
     kubernetes.io/cluster-service: "true"
     task: "kube-insight-logserver"
@@ -24,38 +24,38 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-insight-logserver
-  namespace: {{ vars['namespace'] }}
+  namespace: {{ .Values.namespace }}
   labels:
     k8s-app: "kube-insight-logserver"
     kubernetes.io/cluster-service: "true"
-    version: "v{{ vars['version'] }}"
+    version: "v{{ .Values.version }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       k8s-app: kube-insight-logserver
-      version: v{{ vars['version'] }}
+      version: v{{ .Values.version }}
   template:
     metadata:
       labels:
         task: "kube-insight-logserver"
         k8s-app: "kube-insight-logserver"
-        version: "v{{ vars['version'] }}"
+        version: "v{{ .Values.version }}"
     spec:
       containers:
       - name: kube-insight-logserver
-        image: {{ vars['image'] }}:{{ vars['version'] }}
-        imagePullPolicy: {{ vars['pullPolicy'] }}
+        image: {{ .Values.image }}:{{ .Values.version }}
+        imagePullPolicy: {{ .Values.pullPolicy }}
         args:
           - --port=8080
-          - --cassandra-keyspace={{ vars['cassandraKeyspace'] }}
-          - --cassandra-replication-strategy={{ vars['cassandraReplicationStrategy'] }}
-          - --cassandra-replication-factors={{ vars['cassandraReplicationFactors'] }}
-          - --cassandra-write-concurrency={{ vars['cassandraWriteConcurrency'] }}
-          - --log-level={{ vars['logLevel'] }}
-{% for node in vars['cassandraHosts'] %}
-          - {{ node }}
-{% endfor %}
+          - --cassandra-keyspace={{ .Values.cassandraKeyspace }}
+          - --cassandra-replication-strategy={{ .Values.cassandraReplicationStrategy }}
+          - --cassandra-replication-factors={{ .Values.cassandraReplicationFactors }}
+          - --cassandra-write-concurrency={{ .Values.cassandraWriteConcurrency }}
+          - --log-level={{ .Values.logLevel }}
+        {{- range .Values.cassandraHosts }}
+          - {{ . }}
+        {{- end }}
         readinessProbe:
           httpGet:
             path: /write
@@ -74,11 +74,11 @@ spec:
           timeoutSeconds: 5
         resources:
           limits:
-            cpu: {{ vars['cpuLimitMilliCores'] }}m
-            memory: {{ vars['memLimitMB'] }}Mi
+            cpu: {{ .Values.cpuLimitMilliCores }}m
+            memory: {{ .Values.memLimitMB }}Mi
           requests:
-            cpu: {{ vars['cpuRequestMilliCores'] }}m
-            memory: {{ vars['memRequestMB'] }}Mi
+            cpu: {{ .Values.cpuRequestMilliCores }}m
+            memory: {{ .Values.memRequestMB }}Mi
       tolerations:
       # allow scheduling onto master
       - key: node-role.kubernetes.io/master
