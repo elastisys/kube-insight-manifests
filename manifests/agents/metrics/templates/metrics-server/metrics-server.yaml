@@ -56,18 +56,18 @@ spec:
       serviceAccountName: metrics-server
       containers:
       - name: metrics-server
-        image: {{ vars["metricsServer"]["image"] }}:{{ vars["metricsServer"]["version"] }}
-        imagePullPolicy: {{ vars["metricsServer"]["pullPolicy"] }}
+        image: {{ .Values.metricsServer.image }}:{{ .Values.metricsServer.version }}
+        imagePullPolicy: {{ .Values.metricsServer.pullPolicy }}
         command:
         - /metrics-server
         - --source=kubernetes.summary_api:''
         resources:
           limits:
-            cpu: {{ vars["metricsServer"]["cpuLimitMilliCores"] }}m
-            memory: {{ vars["metricsServer"]["memLimitMB"] }}Mi
+            cpu: {{ .Values.metricsServer.cpuLimitMilliCores }}m
+            memory: {{ .Values.metricsServer.memLimitMB }}Mi
           requests:
-            cpu: {{ vars["metricsServer"]["cpuRequestMilliCores"] }}m
-            memory: {{ vars["metricsServer"]["memRequestMB"] }}M
+            cpu: {{ .Values.metricsServer.cpuRequestMilliCores }}m
+            memory: {{ .Values.metricsServer.memRequestMB }}M
       tolerations:
       # allow scheduling onto master
       - key: node-role.kubernetes.io/master

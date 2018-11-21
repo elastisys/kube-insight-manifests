@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kube-insight-prometheus-kairosdb-adapter
-  namespace: {{ vars['namespace'] }}
+  namespace: {{ .Values.namespace }}
   labels:
     kubernetes.io/cluster-service: "true"
     task: "kube-insight-prometheus-kairosdb-adapter"
@@ -22,28 +22,28 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-insight-prometheus-kairosdb-adapter
-  namespace: {{ vars['namespace'] }}
+  namespace: {{ .Values.namespace }}
   labels:
     k8s-app: "kube-insight-prometheus-kairosdb-adapter"
     kubernetes.io/cluster-service: "true"
-    version: "{{ vars['prometheusKairosDBAdapter']['version'] }}"
+    version: "{{ .Values.prometheusKairosDBAdapter.version }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       k8s-app: kube-insight-prometheus-kairosdb-adapter
-      version: {{ vars['prometheusKairosDBAdapter']['version'] }}
+      version: {{ .Values.prometheusKairosDBAdapter.version }}
   template:
     metadata:
       labels:
         task: "kube-insight-prometheus-kairosdb-adapter"
         k8s-app: "kube-insight-prometheus-kairosdb-adapter"
-        version: "{{ vars['prometheusKairosDBAdapter']['version'] }}"
+        version: "{{ .Values.prometheusKairosDBAdapter.version }}"
     spec:
       containers:
       - name: kube-insight-prometheus-kairosdb-adapter
-        image: {{ vars['prometheusKairosDBAdapter']['image'] }}:{{ vars['prometheusKairosDBAdapter']['version'] }}
-        imagePullPolicy: {{ vars['prometheusKairosDBAdapter']['pullPolicy'] }}
+        image: {{ .Values.prometheusKairosDBAdapter.image }}:{{ .Values.prometheusKairosDBAdapter.version }}
+        imagePullPolicy: {{ .Values.prometheusKairosDBAdapter.pullPolicy }}
         args:
           - --config=/etc/prometheus-kairosdb-adapter/config.yml 
         ports:
@@ -55,11 +55,11 @@ spec:
           readOnly: true          
         resources:
           limits:
-            cpu: {{ vars['prometheusKairosDBAdapter']['cpuLimitMilliCores'] }}m
-            memory: {{ vars['prometheusKairosDBAdapter']['memLimitMB'] }}Mi
+            cpu: {{ .Values.prometheusKairosDBAdapter.cpuLimitMilliCores }}m
+            memory: {{ .Values.prometheusKairosDBAdapter.memLimitMB }}Mi
           requests:
-            cpu: {{ vars['prometheusKairosDBAdapter']['cpuRequestMilliCores'] }}m
-            memory: {{ vars['prometheusKairosDBAdapter']['memRequestMB'] }}Mi
+            cpu: {{ .Values.prometheusKairosDBAdapter.cpuRequestMilliCores }}m
+            memory: {{ .Values.prometheusKairosDBAdapter.memRequestMB }}Mi
       volumes:
       - name: config
         configMap:

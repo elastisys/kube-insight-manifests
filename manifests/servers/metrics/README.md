@@ -18,8 +18,8 @@ kube-insight components for handling metrics. These components include:
 The agent-side metric components are set up with separate manifests under
 [../../agents/metrics](../../agents/metrics).
 
-
 ## Status
+
 These manifests definitely need to undergo additional scrutiny. A few
 improvements from the top of my head that are still missing:
 
@@ -30,16 +30,12 @@ improvements from the top of my head that are still missing:
 - TODO: configure time-to-live for KairosDB
 - TODO: configure roll-ups for KairosDB
 
-
-
 ## Deploying
-The manifests are written as templates with some configurable placeholders,
-whose values are substituded for the values in [values.py](values.py) when
-the [manifestr](../../../manifestr) manifest rendering script is run. The
-rendered manifests can then be applied with `kubectl`.
 
-First, [set up manifestr](../../../manifestr/README.md) and then run:
+The module is installed as a helm chart and to configure the deployment for your
+needs the values in [values.yaml](values.yaml) must be edited.
 
+<<<<<<< HEAD
     # edit values.py
     ${EDITOR} values.py
     # render k8s manifests
@@ -49,18 +45,29 @@ First, [set up manifestr](../../../manifestr/README.md) and then run:
     kubectl create ns metrics
     # apply manifests
     kubectl apply -R -f output/
+=======
+First, [set up helm](https://docs.helm.sh/using_helm/#quickstart-guide) and then run:
 
+    # edit values.yaml
+    ${EDITOR} values.yaml
+>>>>>>> Changed kube-insight to use helm
+
+    # create namespace (if it doesn't already exist)
+    kubectl create ns metrics
+    # install chart
+    helm install `pwd` --name kube-insight-metrics-server
 
 ## Verifying
+
 After deploying, you can visit the services at these locations (after running
 `kubectl proxy -p 8001`):
 
-- Grafana: 
-    - http://localhost:8001/api/v1/namespaces/metrics/services/kube-insight-grafana:3000/proxy
-    - a nodeport service (port `303000`) is also set up for Grafana. You can 
-	  visit its web GUI at  http://<cluster-node>:30090/
-	  
-- KairosDB: http://localhost:8001/api/v1/namespaces/metrics/services/kube-insight-kairosdb:8080/proxy
+- Grafana:
+  - <http://localhost:8001/api/v1/namespaces/metrics/services/kube-insight-grafana:3000/proxy>
+  - a nodeport service (port `303000`) is also set up for Grafana. You can
+    visit its web GUI at http://\<cluster-node\>:30090/
+
+- KairosDB: <http://localhost:8001/api/v1/namespaces/metrics/services/kube-insight-kairosdb:8080/proxy>
 
 In Grafana, create a KairosDB datasource for
-`http://kube-insight-kairosdb:8080` to start experimenting. 
+`http://kube-insight-kairosdb:8080` to start experimenting.

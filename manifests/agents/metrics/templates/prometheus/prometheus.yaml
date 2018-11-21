@@ -5,7 +5,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prometheus
-  namespace: {{ vars["namespace"] }}
+  namespace: {{ .Values.namespace }}
   labels:
     app: prometheus
 spec:
@@ -23,7 +23,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
-  namespace: {{ vars["namespace"] }}
+  namespace: {{ .Values.namespace }}
   labels:
     app: prometheus
 spec:
@@ -40,10 +40,10 @@ spec:
       # TODO: init container to chown -R 65534:65534 volume mount path?
       containers:
         - name: prometheus-server
-          image: {{ vars['prometheus']['image'] }}:{{ vars['prometheus']['version'] }}
-          imagePullPolicy: "{{ vars['prometheus']['pullPolicy'] }}"
+          image: {{ .Values.prometheus.image }}:{{ .Values.prometheus.version }}
+          imagePullPolicy: "{{ .Values.prometheus.pullPolicy }}"
           args:
-            - --storage.tsdb.retention={{ vars['prometheus']['retention'] }}
+            - --storage.tsdb.retention={{ .Values.prometheus.retention }}
             - --config.file=/etc/config/prometheus.yml
             - --storage.tsdb.path=/data
             - --web.console.libraries=/etc/prometheus/console_libraries
@@ -68,11 +68,11 @@ spec:
             timeoutSeconds: 30
           resources:
             limits:
-              cpu: {{ vars["prometheus"]["cpuLimitMilliCores"] }}m
-              memory: {{ vars["prometheus"]["memLimitMB"] }}Mi
+              cpu: {{ .Values.prometheus.cpuLimitMilliCores }}m
+              memory: {{ .Values.prometheus.memLimitMB }}Mi
             requests:
-              cpu: {{ vars["prometheus"]["cpuRequestMilliCores"] }}m
-              memory: {{ vars["prometheus"]["memRequestMB"] }}M
+              cpu: {{ .Values.prometheus.cpuRequestMilliCores }}m
+              memory: {{ .Values.prometheus.memRequestMB }}M
           volumeMounts:
             - name: config-volume
               mountPath: /etc/config
@@ -88,7 +88,7 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/config
-              readOnly: true              
+              readOnly: true
       tolerations:
         # allow scheduling onto master
         - key: node-role.kubernetes.io/master

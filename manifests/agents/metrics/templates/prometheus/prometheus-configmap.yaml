@@ -5,7 +5,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
-  namespace: {{ vars["namespace"] }}
+  namespace: {{ .Values.namespace }}
   labels:
     app: prometheus
 data:
@@ -13,24 +13,24 @@ data:
     global:
       ## How frequently to scrape targets by default
       ##
-      scrape_interval: {{ vars['prometheus']['scrapeInterval'] }}
+      scrape_interval: {{ .Values.prometheus.scrapeInterval }}
       ## How long until a scrape request times out
       ##
       scrape_timeout: 10s
       ## How frequently to evaluate rules
       ##
-      evaluation_interval: 1m
+      evaluation_interval: {{ .Values.prometheus.evaluationInterval }}
 
     rule_files:
-      - "/etc/prometheus-rules/*.rules"
+      - "/etc/config/*.rules"
 
-    {% if vars['prometheus']['remoteWriteURL'] %}
+    {{- if .Values.prometheus.remoteWriteURL }}
     # set up a remote write endpoint to which all scraped targets will be
     # written for long-term storage.
     # see: https://prometheus.io/docs/prometheus/latest/storage
     remote_write:
-      - url: {{ vars['prometheus']['remoteWriteURL'] }}
-    {% endif %}
+      - url: {{ .Values.prometheus.remoteWriteURL }}
+    {{- end }}
 
     scrape_configs:
       # scrape configuration for prometheus itself.
@@ -81,7 +81,7 @@ data:
         relabel_configs:
           - action: keep
             source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
-            regex: {{ vars["namespace"] }};kube-state-metrics;http
+            regex: {{ .Values.namespace }};kube-state-metrics;http
 
 
       # scrape config for kubelet /metrics.

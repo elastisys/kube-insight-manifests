@@ -1,0 +1,41 @@
+namespace: metrics
+
+kubeStateMetrics:
+  version: v1.3.1
+  image: quay.io/coreos/kube-state-metrics
+  pullPolicy: IfNotPresent
+  memLimitMB: 200
+  memRequestMB: 40
+  cpuLimitMilliCores: 100
+  cpuRequestMilliCores: 40
+
+metricsServer:
+  version: v0.2.1
+  image: gcr.io/google_containers/metrics-server-amd64
+  pullPolicy: IfNotPresent
+  memLimitMB: 200
+  memRequestMB: 40
+  cpuLimitMilliCores: 80
+  cpuRequestMilliCores: 40
+
+nodeExporter:
+  version: v0.15.2
+  image: quay.io/prometheus/node-exporter
+  pullPolicy: IfNotPresent
+  memLimitMB: 50
+  memRequestMB: 30
+  cpuLimitMilliCores: 200
+  cpuRequestMilliCores: 100
+
+prometheus:
+  version: v2.1.0
+  image: prom/prometheus
+  pullPolicy: IfNotPresent
+  memLimitMB: 800
+  memRequestMB: 600
+  cpuLimitMilliCores: 200
+  retention: 12h
+  scrapeInterval: 20s
+  evaluationInterval: 1m
+  cpuRequestMilliCores: 100
+  remoteWriteURL: http://kube-insight-prometheus-kairosdb-adapter.metrics.svc.cluster.local:9201/write

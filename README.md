@@ -38,8 +38,8 @@ The project is based on modern, cloud-native components, and adds some glue-code
 where necessary to integrate third-party software. For more details, refer to
 the [architecture](#architecture) section below.
 
-
 ## Project status
+
 This project is very much a work in progress. Additional manifests will be added
 as components are added to the stack.
 
@@ -47,8 +47,8 @@ For the time being there isn't a single installer script but the
 [manifests](manifests) need to be deployed one-by-one. See the [deploy
 section](#deploy) for additional details.
 
-
 ## Architecture
+
 The `kube-insight` observability stack is "Kubernetes-native" in that it both
 monitors a Kubernetes cluster and runs in a Kubernetes cluster. The monitored
 cluster can, and probably should, be a different cluster from the one where
@@ -56,11 +56,10 @@ cluster can, and probably should, be a different cluster from the one where
 your cluster is experiencing problems are the times when you *don't* want your
 monitoring to break -- so keep those error domains separate!).
 
-
 TODO: architecture sketch
 
-
 ## Deploy
+
 The [manifests](manifests) are separated into two categories: manifests intended
 to be deployed onto the _monitored cluster_ ("agents") and manifests intended to
 be deployed on the _insight cluster_ ("servers"). The server-side components
@@ -77,6 +76,5 @@ recommended to run on separate clusters (at least in production).
 A single installer script is not available at this time. For more details and
 for installation instructions, go to each [manifests](manifests) subfolder.
 
-A generic Jinja2 manifest renderer is available under [manifestr](manifestr)
-("manifest renderer") and can be used when some degree of parameterization is
-required in the Kubernetes manifests.
+To install the components helm is required to be install on the kubernetes
+cluster. This makes it easy to upgrade the deployment if this repo is updated

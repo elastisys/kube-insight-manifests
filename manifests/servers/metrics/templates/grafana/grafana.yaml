@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kube-insight-grafana
-  namespace: {{ vars['namespace'] }}
+  namespace: {{ .Values.namespace }}
   labels:
     kubernetes.io/cluster-service: "true"
     task: "kube-insight-grafana"
@@ -22,35 +22,35 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-insight-grafana
-  namespace: {{ vars['namespace'] }}
+  namespace: {{ .Values.namespace }}
   labels:
     k8s-app: "kube-insight-grafana"
     kubernetes.io/cluster-service: "true"
-    version: "{{ vars['grafana']['version'] }}"
+    version: "{{ .Values.grafana.version }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       k8s-app: kube-insight-grafana
-      version: {{ vars['grafana']['version'] }}
+      version: {{ .Values.grafana.version }}
   template:
     metadata:
       labels:
         task: "kube-insight-grafana"
         k8s-app: "kube-insight-grafana"
-        version: "{{ vars['grafana']['version'] }}"
+        version: "{{ .Values.grafana.version }}"
     spec:
       containers:
       - name: kube-insight-grafana
-        image: {{ vars['grafana']['image'] }}:{{ vars['grafana']['version'] }}
-        imagePullPolicy: {{ vars['grafana']['pullPolicy'] }}
+        image: {{ .Values.grafana.image }}:{{ .Values.grafana.version }}
+        imagePullPolicy: {{ .Values.grafana.pullPolicy }}
         command: [ "/bin/sh" ]
         args:
         - -c
         - grafana-cli plugins install grafana-kairosdb-datasource && /run.sh
         env:
         - name: GF_SECURITY_ADMIN_PASSWORD
-          value: "{{ vars['grafana']['adminPassword'] }}"
+          value: "{{ .Values.grafana.adminPassword }}"
         ports:
         - name: http
           containerPort: 3000
@@ -66,11 +66,11 @@ spec:
             scheme: HTTP
         resources:
           limits:
-            cpu: {{ vars['grafana']['cpuLimitMilliCores'] }}m
-            memory: {{ vars['grafana']['memLimitMB'] }}Mi
+            cpu: {{ .Values.grafana.cpuLimitMilliCores }}m
+            memory: {{ .Values.grafana.memLimitMB }}Mi
           requests:
-            cpu: {{ vars['grafana']['cpuRequestMilliCores'] }}m
-            memory: {{ vars['grafana']['memRequestMB'] }}Mi
+            cpu: {{ .Values.grafana.cpuRequestMilliCores }}m
+            memory: {{ .Values.grafana.memRequestMB }}Mi
       tolerations:
       # allow scheduling onto master
       - key: node-role.kubernetes.io/master
